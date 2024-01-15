@@ -1,0 +1,36 @@
+version: '3'
+
+networks:
+  localstack_default:
+    external: true
+
+services:
+  node:
+    restart: always
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/code
+    command: npm run aws
+    networks:
+      - localstack_default
+  # mongo:
+  #   image: mongo
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - mongodb:/data/
+  swagger-ui:
+    depends_on:
+      - node
+    image: swaggerapi/swagger-ui
+    container_name: swagger_ui_container
+    ports:
+      - "80:8080"
+    volumes:
+      - ./swagger:/usr/share/nginx/html/swagger
+    environment:
+      API_URL: /swagger/openapi.yaml
+# volumes:
+#   mongodb:
